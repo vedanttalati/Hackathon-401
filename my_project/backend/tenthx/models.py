@@ -25,7 +25,7 @@ class Job(models.Model):
         default='applied'
     )
 class Communication(models.Model):
-    job = models.ForeignKey(Job, on_delete=models.CASCADE)
+    job = models.ForeignKey(Job, null = False, on_delete=models.CASCADE)
     communication_text = models.CharField(max_length=1000)
     
 class Resume(models.Model):
