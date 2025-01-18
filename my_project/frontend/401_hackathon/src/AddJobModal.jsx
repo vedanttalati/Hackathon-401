@@ -1,123 +1,101 @@
-import React, { useState, useEffect } from 'react';
-import JobCard from './JobCard';
-import JobDetails from './JobDetails';
-import AddJobModal from './AddJobModal';
+import React, { useState } from 'react';
 
-function App() {
-  const defaultJobData = {
-    applied: [
-      { role: 'Frontend Developer', company: 'TechCorp', date: '2025-01-10' },
-      { role: 'UI Designer', company: 'Designify', date: '2025-01-12' },
-    ],
-    interview: [
-      { role: 'Backend Developer', company: 'CodeBase', date: '2025-01-08' },
-    ],
-    offer: [
-      { role: 'Fullstack Developer', company: 'InnovateTech', date: '2025-01-05' },
-    ],
-    rejection: [
-      { role: 'Data Scientist', company: 'AnalyzeAI', date: '2025-01-03' },
-    ],
-  };
-
-  const [jobData, setJobData] = useState(() => {
-    const savedData = localStorage.getItem('jobData');
-    return savedData ? JSON.parse(savedData) : defaultJobData;
+function AddJobModal({ onClose, onAdd }) {
+  const [formData, setFormData] = useState({
+    role: '',
+    company: '',
+    date: '',
+    status: 'applied', // Default to "applied"
   });
 
-  const [selectedJob, setSelectedJob] = useState(null);
-  const [showAddJobModal, setShowAddJobModal] = useState(false);
-
-  useEffect(() => {
-    localStorage.setItem('jobData', JSON.stringify(jobData));
-  }, [jobData]);
-
-  const handleCardClick = (job) => {
-    setSelectedJob({
-      ...job,
-      status: Object.keys(jobData).find((key) => jobData[key].includes(job)),
-    });
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setFormData((prevData) => ({ ...prevData, [name]: value }));
   };
 
-  const closeJobDetails = () => setSelectedJob(null);
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    // Validate the form inputs
+    if (!formData.role || !formData.company || !formData.date) {
+      alert('All fields are required');
+      return;
+    }
 
-  const handleAddJob = (newJob) => {
-    setJobData((prevData) => ({
-      ...prevData,
-      [newJob.status]: [...prevData[newJob.status], newJob],
-    }));
-    setShowAddJobModal(false);
-  };
-
-  const handleEditJob = (updatedJob) => {
-    setJobData((prevData) => {
-      const currentStatus = updatedJob.status;
-      const updatedJobs = prevData[currentStatus].map((job) =>
-        job.role === updatedJob.originalRole && job.company === updatedJob.originalCompany
-          ? { ...updatedJob, status: undefined } // Prevent duplicate status in the job object
-          : job
-      );
-      return {
-        ...prevData,
-        [currentStatus]: updatedJobs,
-      };
-    });
-    setSelectedJob(null);
+    onAdd(formData); // Call the onAdd function with the new job
+    onClose(); // Close the modal after successful submission
   };
 
   return (
-    <div className="min-h-screen bg-gray-100 flex flex-col">
-      <header className="bg-blue-600 text-white p-6 shadow-md">
-        <div className="flex justify-between items-center max-w-5xl mx-auto">
-          <h1 className="text-2xl font-bold">Tenth X</h1>
-          <button
-            onClick={() => setShowAddJobModal(true)}
-            className="bg-white text-blue-600 px-4 py-2 rounded-md shadow-md hover:bg-gray-100"
-          >
-            Add Job
-          </button>
-        </div>
-      </header>
-
-      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 max-w-7xl mx-auto my-8">
-        {Object.entries(jobData).map(([status, jobs]) => (
-          <div key={status} className="bg-white shadow-md rounded-lg p-4">
-            <h2 className="text-lg font-semibold capitalize border-b pb-2 mb-4 text-blue-600">
-              {status}
-            </h2>
-            {jobs.map((job, index) => (
-              <div
-                key={index}
-                onClick={() => handleCardClick(job)}
-                className="cursor-pointer hover:bg-gray-100 p-2 rounded-md"
-              >
-                <JobCard job={job} />
-              </div>
-            ))}
+    <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
+      <div className="bg-white rounded-lg p-6 w-96 shadow-lg">
+        <h2 className="text-lg font-semibold mb-4">Add New Job</h2>
+        <form onSubmit={handleSubmit}>
+          <div className="mb-4">
+            <label className="block text-sm font-medium mb-1">Role</label>
+            <input
+              type="text"
+              name="role"
+              value={formData.role}
+              onChange={handleChange}
+              className="w-full border rounded p-2"
+              required
+            />
           </div>
-        ))}
+          <div className="mb-4">
+            <label className="block text-sm font-medium mb-1">Company</label>
+            <input
+              type="text"
+              name="company"
+              value={formData.company}
+              onChange={handleChange}
+              className="w-full border rounded p-2"
+              required
+            />
+          </div>
+          <div className="mb-4">
+            <label className="block text-sm font-medium mb-1">Date Applied</label>
+            <input
+              type="date"
+              name="date"
+              value={formData.date}
+              onChange={handleChange}
+              className="w-full border rounded p-2"
+              required
+            />
+          </div>
+          <div className="mb-4">
+            <label className="block text-sm font-medium mb-1">Status</label>
+            <select
+              name="status"
+              value={formData.status}
+              onChange={handleChange}
+              className="w-full border rounded p-2"
+            >
+              <option value="applied">Applied</option>
+              <option value="interview">Interview</option>
+              <option value="offer">Offer</option>
+              <option value="rejection">Rejection</option>
+            </select>
+          </div>
+          <div className="flex justify-end">
+            <button
+              type="button"
+              onClick={onClose}
+              className="text-gray-500 hover:text-gray-800 mr-4"
+            >
+              Cancel
+            </button>
+            <button
+              type="submit"
+              className="bg-blue-600 text-white px-4 py-2 rounded shadow-md hover:bg-blue-700"
+            >
+              Add Job
+            </button>
+          </div>
+        </form>
       </div>
-
-      {selectedJob && (
-        <JobDetails
-          job={selectedJob}
-          onClose={closeJobDetails}
-          onEdit={handleEditJob} // Pass the edit handler
-        />
-      )}
-
-      {showAddJobModal && (
-        <AddJobModal
-          onClose={() => setShowAddJobModal(false)}
-          onAdd={handleAddJob}
-        />
-      )}
-
-      <footer className="bg-blue-600 text-white py-4 mt-auto">
-        <p className="text-center text-sm">© 2025 Job Tracker App. All Rights Reserved.</p>
-      </footer>
     </div>
   );
 }
 
-export default App;
+export default AddJobModal;
