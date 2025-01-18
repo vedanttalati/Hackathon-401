@@ -16,6 +16,6 @@ In a new terminal, cd into frontend, install dependencies, then start the dev se
 - cd frontend
 - npm install
 - npm start
-
+- npm install firebase
 
 Access React at http://localhost:3000 and Django at http://127.0.0.1:8000
