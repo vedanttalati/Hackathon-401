@@ -11,7 +11,6 @@ class Job(models.Model):
     job_title = models.CharField(max_length=100)
     description = models.CharField(max_length=2000)
     date_applied = models.DateField()
-    status = models.CharField()
     communications = models.ForeignKey(Communication, on_delete=models.CASCADE)
     location = models.CharField(max_length=30)
 
