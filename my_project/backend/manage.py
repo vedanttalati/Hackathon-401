@@ -2,18 +2,7 @@
 """Django's command-line utility for administrative tasks."""
 import os
 import sys
-import pyrebase
 import json
-
-with open("my_project/backend/config/firebaseConfig.js") as f:
-    firebaseConfig = json.load(f)
-
-firebase = pyrebase.initialize_app(firebaseConfig)
-storage = firebase.storage()
-
-
-
-
 
 def main():
     """Run administrative tasks."""

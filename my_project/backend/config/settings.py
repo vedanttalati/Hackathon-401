@@ -37,6 +37,8 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'tenthx', #app name
+    'rest_framework' #for api endpoints - simple
 ]
 
 MIDDLEWARE = [
