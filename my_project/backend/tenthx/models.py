@@ -2,8 +2,7 @@ from django.db import models
 
 # Create your models here.
 
-class Communication(models.Model):
-    communication = models.CharField(max_length=1000)
+
 
 class Job(models.Model):
     job_ID = models.IntegerField(primary_key=True)
@@ -11,7 +10,6 @@ class Job(models.Model):
     job_title = models.CharField(max_length=100)
     description = models.CharField(max_length=2000)
     date_applied = models.DateField()
-    communications = models.ForeignKey(Communication, on_delete=models.CASCADE)
     location = models.CharField(max_length=30)
 
     status_choices = [
@@ -26,6 +24,9 @@ class Job(models.Model):
         choices=status_choices,
         default='applied'
     )
+class Communication(models.Model):
+    job = models.ForeignKey(Job, on_delete=models.CASCADE)
+    communication_text = models.CharField(max_length=1000)
     
 class Resume(models.Model):
     is_master = models.BooleanField()
